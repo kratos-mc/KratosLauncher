@@ -36,10 +36,12 @@ const { walk } = require("./utils/walk-path");
     });
 
     bundler.watch((err, buildEvent) => {
-      if (err || buildEvent.type === "buildFailure") {
-        messageParcelError(err);
-
+      if (err) {
         console.log(chalk.red(`[~] Waiting for renderer change...`));
+        throw err;
+      }
+      if (buildEvent.type === "buildFailure") {
+        messageParcelError(buildEvent.diagnostics);
       } else {
         console.clear();
         console.log(chalk.gray(`[Render Builder::]`));

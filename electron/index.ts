@@ -29,23 +29,60 @@ async function beforeRunApplication() {
   console.log(chalk.gray(`[~] ${chalk.green(`isPacked: `)} ${app.isPackaged}`));
 }
 
-function renderLoadingWindow() {
+async function createLoadingWindow() {
   const render = new BrowserWindow({
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
+      contextIsolation: true,
     },
     show: true,
     frame: false,
     width: 300,
     height: 400,
+    alwaysOnTop: true,
   });
+
+  // Open DevTools when is not on production mode
+  if (!isProduction()) {
+    render.webContents.openDevTools({ mode: "detach", activate: true });
+  }
+
   render.loadFile(
     path.join(app.getAppPath(), `dist`, `render`, `loading`, `loading.html`)
   );
+
+  return render;
 }
 
-beforeRunApplication().then(() => {
-  app.whenReady().then(() => {
-    renderLoadingWindow();
-  });
-});
+Promise.resolve()
+  .then(() => beforeRunApplication())
+  .then(() => app.whenReady())
+  .then(() => createLoadingWindow())
+  .then((loadingWindow) => {
+    // Wait for it to finish load the content
+    loadingWindow.webContents.on("did-finish-load", () => {
+      setTimeout(() => {
+        // Starting to load the directory
+        loadingWindow.webContents.send("loading:message", {
+          message: "loading launcher directory",
+        });
+
+        setTimeout(() => {
+          // Fetching new game version manifest
+          loadingWindow.webContents.send("loading:message", {
+            message: "updating game versions",
+          });
+
+          //  When done. close
+          setTimeout(() => {
+            loadingWindow.close();
+          }, 3000);
+        }, 2000);
+      }, 2000);
+    });
+  })
+  .then(() =>
+    app.on("window-all-closed", () => {
+      if (process.platform !== "darwin") app.quit();
+    })
+  );

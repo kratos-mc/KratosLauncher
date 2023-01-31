@@ -51,7 +51,7 @@ const { walk } = require("./utils/walk-path");
       });
     }
   } catch (err) {
-    messageParcelError(err);
+    messageParcelError(err.diagnostics);
   }
 })().catch((err) => {
   console.error(err);
