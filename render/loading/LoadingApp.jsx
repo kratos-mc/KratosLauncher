@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import "./loading.css";
+import HangingLantern from "./../assets/images/hanging_lantern.webp";
 
-export default function LoadingApp(): React.ReactNode {
-  const [message, setMessage] = useState<string>("bootstrapping");
+export default function LoadingApp() {
+  const [message, setMessage] = useState("bootstrapping");
   useEffect(() => {
     console.log(window.versions);
     console.log(`Listen loading:message ...`);
@@ -19,8 +20,8 @@ export default function LoadingApp(): React.ReactNode {
   return (
     <div className="px-6 py-12">
       <center className=" flex flex-col gap-4">
-        <div className="mb-16">
-          <div>Icon here</div>
+        <div className="bg-primary-content rounded-2xl">
+          <img src={HangingLantern} className="animate-pulse" />
         </div>
         <div>
           <h1 className="font-bold text-3xl mt-4">Kratos</h1>
