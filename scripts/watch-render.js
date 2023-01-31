@@ -7,26 +7,21 @@ const { walk } = require("./utils/walk-path");
 (async () => {
   if (process.env.NODE_ENV === "production") {
     console.log(
-      chalk.yellow(
+      chalk.red(
         `${chalk.gray(
-          `[~] building/bundling render on production mode`
-        )}  (can take longer build time)`
+          `[~] watch-mode: production have no build-time effect on watch compiler`
+        )}`
       )
     );
   }
 
   const outputGlobFiles = await walk("./render/**/*.html");
 
-  // outputGlobFiles.forEach(async (filePath) => {
-
-  // });
-
   try {
     const bundler = new Parcel({
       defaultConfig: "@parcel/config-default",
       entries: outputGlobFiles,
-      mode:
-        process.env.NODE_ENV === "production" ? "production" : "development",
+      mode: "development",
 
       targets: {
         reactRender: {
@@ -40,16 +35,23 @@ const { walk } = require("./utils/walk-path");
       },
     });
 
-    const buildStatus = await bundler.run();
-    if (buildStatus.type === "buildSuccess") {
-      outputGlobFiles.forEach((filePath) => {
-        console.log(
-          ` ${chalk.gray(`*`)} ${chalk.green(filePath)} ${chalk.gray(
-            `and included item...`
-          )}`
-        );
-      });
-    }
+    bundler.watch((err, buildEvent) => {
+      if (err || buildEvent.type === "buildFailure") {
+        messageParcelError(err);
+
+        console.log(chalk.red(`[~] Waiting for renderer change...`));
+      } else {
+        console.clear();
+        console.log(chalk.gray(`[Render Builder::]`));
+        outputGlobFiles.forEach((filePath) => {
+          console.log(
+            ` ${chalk.gray(`*`)} ${chalk.green(filePath)} ${chalk.gray(
+              `and included item...`
+            )}`
+          );
+        });
+      }
+    });
   } catch (err) {
     messageParcelError(err);
   }

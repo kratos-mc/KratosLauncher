@@ -40,7 +40,7 @@ function renderLoadingWindow() {
     height: 400,
   });
   render.loadFile(
-    path.join(app.getAppPath(), `dist`, `render`, `loading.html`)
+    path.join(app.getAppPath(), `dist`, `render`, `loading`, `loading.html`)
   );
 }
 

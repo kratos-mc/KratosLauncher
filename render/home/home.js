@@ -6,4 +6,4 @@ if (appElement === null || appElement === undefined) {
   throw new Error(`appElement cannot be undefined`);
 }
 
-createRoot(appElement);
+createRoot(appElement).render(<div></div>);
