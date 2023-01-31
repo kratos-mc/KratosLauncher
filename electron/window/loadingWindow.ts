@@ -25,6 +25,11 @@ export async function createLoadingWindow() {
   render.loadFile(
     path.join(app.getAppPath(), `dist`, `render`, `loading`, `loading.html`)
   );
-
+  render.setResizable(false);
+  // TODO: fix the zoom (disable the zoom factor)
+  // render.webContents.on("did-finish-load", () => {
+  //   render.webContents.setZoomFactor(1);
+  //   render.webContents.setVisualZoomLevelLimits(1, 1);
+  // });
   return render;
 }
