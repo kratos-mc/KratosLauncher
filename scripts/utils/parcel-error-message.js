@@ -5,7 +5,7 @@ function messageParcelError(diagnostics) {
     throw new Error("no error was detected");
   }
   if (diagnostics) {
-    error.diagnostics.forEach((diagnostic) => {
+    diagnostics.forEach((diagnostic) => {
       console.log(chalk.red(`* ${diagnostic.message}`));
       console.log(
         diagnostic.hints
