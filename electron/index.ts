@@ -34,6 +34,10 @@ function renderLoadingWindow() {
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
     },
+    show: true,
+    frame: false,
+    width: 300,
+    height: 400,
   });
   render.loadFile(
     path.join(app.getAppPath(), `dist`, `render`, `loading.html`)
