@@ -1,8 +1,7 @@
 const { Parcel } = require("@parcel/core");
 const chalk = require("chalk");
 const { messageParcelError } = require("./utils/parcel-error-message");
-
-const { walk } = require("./utils/walk-path");
+const path = require("path");
 
 (async () => {
   if (process.env.NODE_ENV === "production") {
@@ -15,12 +14,10 @@ const { walk } = require("./utils/walk-path");
     );
   }
 
-  const outputGlobFiles = await walk("./render/**/*.html");
-
   try {
     const bundler = new Parcel({
       defaultConfig: "@parcel/config-default",
-      entries: outputGlobFiles,
+      entries: ["./render/**/*.html"],
       mode: "development",
 
       targets: {
@@ -45,13 +42,13 @@ const { walk } = require("./utils/walk-path");
       } else {
         console.clear();
         console.log(chalk.gray(`[Render Builder::]`));
-        outputGlobFiles.forEach((filePath) => {
-          console.log(
-            ` ${chalk.gray(`*`)} ${chalk.green(filePath)} ${chalk.gray(
-              `and included item...`
-            )}`
-          );
-        });
+        Array.from(buildEvent.changedAssets.values())
+          .map((asset) => path.parse(asset.filePath).base)
+          .forEach((filePath) => {
+            console.log(
+              ` ${chalk.gray(`*`)} ${chalk.green(filePath)} ${chalk.gray()}`
+            );
+          });
       }
     });
   } catch (err) {
