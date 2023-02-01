@@ -6,7 +6,7 @@
   "scripts": {
     "build": "node ./scripts/cli.js build all",
     "clean": "node ./scripts/cli.js clean",
-    "test": "mocha ./test/**/*.spec.*",
+    "test": "cross-env NODE_ENV=test mocha",
     "start": "electron .",
     "dev": "concurrently -c \"auto\" \"node ./scripts/watch-render.js\" \"wait-on file:./dist/render && node ./scripts/cli.js build electron && electron .\" "
   },
@@ -30,6 +30,7 @@
     "chai": "^4.3.7",
     "chalk": "^4.1.2",
     "concurrently": "^7.6.0",
+    "cross-env": "^7.0.3",
     "daisyui": "^2.49.0",
     "dotenv": "^16.0.3",
     "electron": "^22.1.0",
