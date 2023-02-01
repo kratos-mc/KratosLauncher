@@ -1,6 +1,9 @@
 import fse from "fs-extra";
 import chalk from "chalk";
-import { getUserDataPath } from "../../electron/launcher/file";
+import {
+  getLauncherAppPath,
+  setupUserDataPath,
+} from "../../electron/launcher/file";
 
 /**
  * Global before
@@ -13,8 +16,10 @@ before(() => {
     )
   );
   console.log(
-    chalk.green(`${chalk.gray(`[-]`)} userData: ${getUserDataPath()}`)
+    chalk.green(`${chalk.gray(`[-]`)} userData: ${getLauncherAppPath()}`)
   );
+
+  setupUserDataPath();
 });
 
 /**
@@ -26,5 +31,5 @@ after(() => {
     chalk.green(`${chalk.gray(`[-]`)} Cleaning up userData directory...`)
   );
 
-  fse.rmdirSync(getUserDataPath());
+  fse.rmSync(getLauncherAppPath(), { recursive: true, force: true });
 });
