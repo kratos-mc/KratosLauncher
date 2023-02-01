@@ -1,5 +1,6 @@
 import path from "path";
 import { app } from "electron";
+import fse from "fs-extra";
 
 /**
  * An absolute app user data path.
@@ -10,4 +11,10 @@ export function getUserDataPath() {
   return process.env.NODE_ENV === "test"
     ? path.join(process.cwd(), process.env.TEST_OUTPUT || ".test_output")
     : app.getPath("userData");
+}
+
+export function setupUserDataPath() {
+  if (!fse.existsSync(getUserDataPath())) {
+    fse.mkdirSync(getUserDataPath(), { recursive: true });
+  }
 }
