@@ -1,4 +1,4 @@
-import { BrowserWindow, app } from "electron";
+import { BrowserWindow, app, ipcMain } from "electron";
 import path from "path";
 import { isProduction } from "../environment";
 
@@ -13,6 +13,8 @@ export function createFirstRunSetupWindow() {
       preload: path.join(app.getAppPath(), "dist", "electron", "preload.js"),
     },
     frame: false,
+    width: 400,
+    height: 600,
     show: true,
   });
   // Open DevTools when is not on production mode

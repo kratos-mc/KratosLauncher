@@ -7,14 +7,22 @@ import fse from "fs-extra";
  *
  * @returns the appData which electron provided or path.join(process.cwd(), process.env.TEST_OUTPUT || ".test_output") for test
  */
-export function getUserDataPath() {
+export function getLauncherAppPath() {
   return process.env.NODE_ENV === "test"
     ? path.join(process.cwd(), process.env.TEST_OUTPUT || ".test_output")
-    : app.getPath("userData");
+    : path.join(path.join(app.getPath("appData"), app.name));
 }
 
 export function setupUserDataPath() {
-  if (!fse.existsSync(getUserDataPath())) {
-    fse.mkdirSync(getUserDataPath(), { recursive: true });
+  if (!fse.existsSync(getLauncherAppPath())) {
+    fse.mkdirSync(getLauncherAppPath(), { recursive: true });
   }
+}
+
+/**
+ * Get setting directory path name
+ * @returns a setting directory path name
+ */
+export function getSettingPath() {
+  return path.join(getLauncherAppPath(), "settings");
 }
