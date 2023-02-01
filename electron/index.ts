@@ -2,6 +2,7 @@ import chalk from "chalk";
 import { app, BrowserWindow } from "electron";
 import path from "path";
 import { isProduction } from "./environment";
+import { createFirstRunSetupWindow } from "./window/FirstRunWindow";
 import { createLoadingWindow } from "./window/loadingWindow";
 
 async function beforeRunApplication() {
@@ -55,7 +56,14 @@ Promise.resolve()
 
           //  When done. close
           setTimeout(() => {
-            // loadingWindow.close();
+            loadingWindow.hide();
+            // Close the devTools
+            if (loadingWindow.webContents.isDevToolsOpened()) {
+              loadingWindow.webContents.closeDevTools();
+            }
+
+            // Open first run setup if the user has never run an application before
+            const firstRunSetup = createFirstRunSetupWindow();
           }, 3000);
         }, 2000);
       }, 2000);

@@ -7,7 +7,6 @@ export async function createLoadingWindow() {
   const render = new BrowserWindow({
     webPreferences: {
       preload: path.join(app.getAppPath(), "dist", "electron", "preload.js"),
-      contextIsolation: true,
     },
     show: true,
     frame: false,

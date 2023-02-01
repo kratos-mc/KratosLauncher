@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import "./loading.css";
+import "./../styles/import-tailwind.css";
 import "../styles/util.css";
 import HangingLantern from "./../assets/images/hanging_lantern.webp";
 
