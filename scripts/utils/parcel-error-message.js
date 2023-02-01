@@ -1,8 +1,11 @@
 const chalk = require("chalk");
 
-function messageParcelError(error) {
-  if (error.diagnostics) {
-    error.diagnostics.forEach((diagnostic) => {
+function messageParcelError(diagnostics) {
+  if (!diagnostics) {
+    throw new Error("no error was detected");
+  }
+  if (diagnostics) {
+    diagnostics.forEach((diagnostic) => {
       console.log(chalk.red(`* ${diagnostic.message}`));
       console.log(
         diagnostic.hints
