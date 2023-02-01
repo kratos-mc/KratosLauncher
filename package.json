@@ -1,5 +1,6 @@
 {
   "name": "kratos-launcher",
+  "productName": "Kratos",
   "version": "1.0.0",
   "description": "",
   "main": "./dist/electron/index.js",
@@ -7,6 +8,7 @@
     "build": "node ./scripts/cli.js build all",
     "clean": "node ./scripts/cli.js clean",
     "test": "cross-env NODE_ENV=test mocha",
+    "coverage": "cross-env NODE_ENV=test nyc npm run test",
     "start": "electron .",
     "dev": "concurrently -c \"auto\" \"node ./scripts/watch-render.js\" \"wait-on file:./dist/render && node ./scripts/cli.js build electron && electron .\" "
   },
@@ -38,6 +40,7 @@
     "electron-packager": "^17.1.1",
     "glob": "^8.1.0",
     "mocha": "^10.2.0",
+    "nyc": "^15.1.0",
     "postcss": "^8.4.21",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
