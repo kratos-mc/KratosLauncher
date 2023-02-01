@@ -2,6 +2,12 @@ import chalk from "chalk";
 import { app, BrowserWindow } from "electron";
 import path from "path";
 import { isProduction } from "./environment";
+import { getLauncherAppPath, setupUserDataPath } from "./launcher/file";
+import {
+  getSettingsConfiguration,
+  hasSettingsFile,
+  setupSettingPath,
+} from "./launcher/settings";
 import { createFirstRunSetupWindow } from "./window/FirstRunWindow";
 import { createLoadingWindow } from "./window/loadingWindow";
 
@@ -22,7 +28,17 @@ async function beforeRunApplication() {
         )}`
       )
     );
+    console.log(
+      chalk.gray(
+        `[~] ${chalk.green(`Launcher app path: `)} ${getLauncherAppPath()}`
+      )
+    );
   }
+  // Set application data
+  app.setPath(
+    "userData",
+    path.join(app.getPath("appData"), app.name, "web-cache")
+  );
 
   console.log(chalk.gray(`[~] ${chalk.green(`App Name: `)} ${app.name}`));
   console.log(
@@ -42,31 +58,36 @@ Promise.resolve()
   .then((loadingWindow) => {
     // Wait for it to finish load the content
     loadingWindow.webContents.on("did-finish-load", () => {
+      // Starting to load the directory
+      loadingWindow.webContents.send("loading:message", {
+        message: "loading launcher directory",
+      });
+
+      // Create if userData is not existed
+      setupUserDataPath();
+
+      // Setup the settings
+      setupSettingPath();
+
+      loadingWindow.webContents.send("loading:message", {
+        message: "loading launcher configuration",
+      });
+
       setTimeout(() => {
-        // Starting to load the directory
-        loadingWindow.webContents.send("loading:message", {
-          message: "loading launcher directory",
-        });
+        loadingWindow.hide();
+        // Close the devTools
+        if (loadingWindow.webContents.isDevToolsOpened()) {
+          loadingWindow.webContents.closeDevTools();
+        }
 
-        setTimeout(() => {
-          // Fetching new game version manifest
-          loadingWindow.webContents.send("loading:message", {
-            message: "updating game versions",
-          });
-
-          //  When done. close
-          setTimeout(() => {
-            loadingWindow.hide();
-            // Close the devTools
-            if (loadingWindow.webContents.isDevToolsOpened()) {
-              loadingWindow.webContents.closeDevTools();
-            }
-
-            // Open first run setup if the user has never run an application before
-            const firstRunSetup = createFirstRunSetupWindow();
-          }, 3000);
-        }, 2000);
-      }, 2000);
+        if (hasSettingsFile()) {
+          // TODO: render main launcher
+        } else {
+          // Open first run setup if the user has never run an application before
+          const firstRunSetup = createFirstRunSetupWindow();
+          // getSettingsConfiguration().save();
+        }
+      }, 3000);
     });
   })
   .then(() => {

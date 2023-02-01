@@ -1,12 +1,14 @@
 {
   "name": "kratos-launcher",
+  "productName": "Kratos",
   "version": "1.0.0",
   "description": "",
   "main": "./dist/electron/index.js",
   "scripts": {
     "build": "node ./scripts/cli.js build all",
     "clean": "node ./scripts/cli.js clean",
-    "test": "mocha ./test/**/*.spec.*",
+    "test": "cross-env NODE_ENV=test mocha",
+    "coverage": "cross-env NODE_ENV=test nyc npm run test",
     "start": "electron .",
     "dev": "concurrently -c \"auto\" \"node ./scripts/watch-render.js\" \"wait-on file:./dist/render && node ./scripts/cli.js build electron && electron .\" "
   },
@@ -24,18 +26,21 @@
     "@swc/cli": "^0.1.57",
     "@swc/core": "^1.3.31",
     "@types/chai": "^4.3.4",
+    "@types/fs-extra": "^11.0.1",
     "@types/mocha": "^10.0.1",
     "@types/react": "^18.0.27",
     "@types/react-dom": "^18.0.10",
     "chai": "^4.3.7",
     "chalk": "^4.1.2",
     "concurrently": "^7.6.0",
+    "cross-env": "^7.0.3",
     "daisyui": "^2.49.0",
     "dotenv": "^16.0.3",
     "electron": "^22.1.0",
     "electron-packager": "^17.1.1",
     "glob": "^8.1.0",
     "mocha": "^10.2.0",
+    "nyc": "^15.1.0",
     "postcss": "^8.4.21",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -45,5 +50,8 @@
     "typescript": "^4.9.4",
     "wait-on": "^7.0.1",
     "yargs": "^17.6.2"
+  },
+  "dependencies": {
+    "fs-extra": "^11.1.0"
   }
 }
