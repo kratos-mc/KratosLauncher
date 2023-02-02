@@ -26,41 +26,61 @@ describe(`Hash file testing`, () => {
   });
 
   it(`should match with provided sha1 file`, function (done) {
-    let inBuffer = fse.createReadStream(dummyTextPathName);
-    let hash = createSha1HashStream(inBuffer);
-
-    /**
-     * The buffer must be close before using
-     */
-    inBuffer.on("close", () => {
-      expect(hash.digest("hex")).to.be.eq(
-        `86f7e437faa5a7fce15d1ddcb9eaeaea377667b8`
-      );
-      done();
+    const assertPromise = new Promise((resolve, reject) => {
+      let inBuffer = fse.createReadStream(dummyTextPathName);
+      let hash = createSha1HashStream(inBuffer);
+      inBuffer.on("error", (err) => reject(err));
+      inBuffer.on(`close`, () => {
+        // expect().to.eq(``);
+        resolve(hash.digest("hex"));
+      });
     });
+
+    assertPromise
+      .then((hash) => {
+        expect(hash).to.be.eq(`86f7e437faa5a7fce15d1ddcb9eaeaea377667b8`);
+        done();
+      })
+      .catch(done);
   });
 
   it("should match with provided sha256 file", function (done) {
-    let inBuffer = fse.createReadStream(dummyTextPathName);
-    let hash = createSha256Stream(inBuffer);
-
-    inBuffer.on(`close`, () => {
-      expect(hash.digest("hex")).to.eq(
-        `ca978112ca1bbdcafac231b39a23dc4da786eff8147c4e72b9807785afee48bb`
-      );
-
-      done();
+    const assertPromise = new Promise((resolve, reject) => {
+      let inBuffer = fse.createReadStream(dummyTextPathName);
+      let hash = createSha256Stream(inBuffer);
+      inBuffer.on("error", (err) => reject(err));
+      inBuffer.on(`close`, () => {
+        // expect().to.eq(``);
+        resolve(hash.digest("hex"));
+      });
     });
+
+    assertPromise
+      .then((hash) => {
+        expect(hash).to.be.eq(
+          `ca978112ca1bbdcafac231b39a23dc4da786eff8147c4e72b9807785afee48bb`
+        );
+        done();
+      })
+      .catch(done);
   });
 
   it("should match with provided md5 file", function (done) {
-    let inBuffer = fse.createReadStream(dummyTextPathName);
-    let hash = createMd5Stream(inBuffer);
-
-    inBuffer.on(`close`, () => {
-      expect(hash.digest("hex")).to.eq(`0cc175b9c0f1b6a831c399e269772661`);
-
-      done();
+    const assertPromise = new Promise((resolve, reject) => {
+      let inBuffer = fse.createReadStream(dummyTextPathName);
+      let hash = createMd5Stream(inBuffer);
+      inBuffer.on("error", (err) => reject(err));
+      inBuffer.on(`close`, () => {
+        // expect().to.eq(``);
+        resolve(hash.digest("hex"));
+      });
     });
+
+    assertPromise
+      .then((hash) => {
+        expect(hash).to.be.eq(`0cc175b9c0f1b6a831c399e269772661`);
+        done();
+      })
+      .catch(done);
   });
 });
