@@ -1,64 +1,86 @@
-import needle from "needle";
+import path from "path";
+import fse from "fs-extra";
 import { expect } from "chai";
 import {
   createMd5Stream,
   createSha1HashStream,
   createSha256Stream,
 } from "../security";
+import { getLauncherAppPath } from "../../launcher/file";
 
-describe(`hash.spec.ts`, () => {
-  describe(`Sha1`, () => {
-    it(`true value check for sha1`, function (done) {
-      this.timeout(5000);
+describe(`Hash file testing`, () => {
+  const dummyTextPathName = path.join(
+    getLauncherAppPath(),
+    "hashes",
+    "buffer.txt"
+  );
 
-      let inBuffer = needle.get(
-        "https://libraries.minecraft.net/com/mojang/blocklist/1.0.10/blocklist-1.0.10.jar"
-      );
+  before(() => {
+    /**
+     * Create a new text file contains a string with value "a"
+     */
+    if (!fse.pathExistsSync(path.dirname(dummyTextPathName))) {
+      fse.emptyDirSync(path.dirname(dummyTextPathName));
+    }
+    fse.writeFileSync(dummyTextPathName, "a", "utf-8");
+  });
+
+  it(`should match with provided sha1 file`, function (done) {
+    const assertPromise = new Promise((resolve, reject) => {
+      let inBuffer = fse.createReadStream(dummyTextPathName);
       let hash = createSha1HashStream(inBuffer);
-
-      /**
-       * The buffer must be close before using
-       */
-      inBuffer.on("close", () => {
-        expect(hash.digest("hex")).to.be.eq(
-          `5c685c5ffa94c4cd39496c7184c1d122e515ecef`
-        );
-        done();
+      inBuffer.on("error", (err) => reject(err));
+      inBuffer.on(`close`, () => {
+        // expect().to.eq(``);
+        resolve(hash.digest("hex"));
       });
     });
+
+    assertPromise
+      .then((hash) => {
+        expect(hash).to.be.eq(`86f7e437faa5a7fce15d1ddcb9eaeaea377667b8`);
+        done();
+      })
+      .catch(done);
   });
 
-  describe("sha256", () => {
-    it("create a valid hash from download stream", function (done) {
-      this.timeout(5000);
-      let inBuffer = needle.get(
-        "https://libraries.minecraft.net/com/mojang/blocklist/1.0.10/blocklist-1.0.10.jar"
-      );
+  it("should match with provided sha256 file", function (done) {
+    const assertPromise = new Promise((resolve, reject) => {
+      let inBuffer = fse.createReadStream(dummyTextPathName);
       let hash = createSha256Stream(inBuffer);
-
+      inBuffer.on("error", (err) => reject(err));
       inBuffer.on(`close`, () => {
-        expect(hash.digest("hex")).to.eq(
-          `830bfd639c8db49236bbd8e45d3a2b8c96c56ff654a10118654958a6235d4c44`
-        );
-
-        done();
+        // expect().to.eq(``);
+        resolve(hash.digest("hex"));
       });
     });
+
+    assertPromise
+      .then((hash) => {
+        expect(hash).to.be.eq(
+          `ca978112ca1bbdcafac231b39a23dc4da786eff8147c4e72b9807785afee48bb`
+        );
+        done();
+      })
+      .catch(done);
   });
 
-  describe("md5", () => {
-    it("create a valid hash from download stream", function (done) {
-      this.timeout(5000);
-      let inBuffer = needle.get(
-        "https://libraries.minecraft.net/com/mojang/blocklist/1.0.10/blocklist-1.0.10.jar"
-      );
+  it("should match with provided md5 file", function (done) {
+    const assertPromise = new Promise((resolve, reject) => {
+      let inBuffer = fse.createReadStream(dummyTextPathName);
       let hash = createMd5Stream(inBuffer);
-
+      inBuffer.on("error", (err) => reject(err));
       inBuffer.on(`close`, () => {
-        expect(hash.digest("hex")).to.eq(`fc1420e3182dd32b4df9933f810ebebb`);
-
-        done();
+        // expect().to.eq(``);
+        resolve(hash.digest("hex"));
       });
     });
+
+    assertPromise
+      .then((hash) => {
+        expect(hash).to.be.eq(`0cc175b9c0f1b6a831c399e269772661`);
+        done();
+      })
+      .catch(done);
   });
 });

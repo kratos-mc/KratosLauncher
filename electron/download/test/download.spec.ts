@@ -660,8 +660,6 @@ describe("Download-core", function () {
             download.on("done", () => {
               // expect(fse.pathExistsSync(path.basename(downloadPath))).to.be.true;
               // Assert download
-              expect(fse.existsSync(downloadPath)).to.be.true;
-              expect(getFileSizeInBytes(downloadPath)).to.eq(964);
               resolve();
             });
           } catch (error) {
@@ -673,6 +671,7 @@ describe("Download-core", function () {
       await successMakeDirectoryDownloadPromise;
       expect(fse.pathExistsSync(path.dirname(downloadPath))).to.be.true;
       expect(fse.existsSync(downloadPath)).to.be.true;
+      expect(getFileSizeInBytes(downloadPath)).to.eq(964);
 
       const unrealPathDownload = path.join(
         getLauncherAppPath(),
