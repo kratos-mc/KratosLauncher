@@ -6,12 +6,23 @@ import { Home } from "./Home/Home";
 import { Profile } from "./Profile/Profile";
 
 export default function App() {
+  const handleToggleMaximizeWindow = () => {
+    window.launcher.toggleMaximizeWindow();
+  };
+
   return (
     <>
       <MemoryRouter>
         <div className="app-wrapper overflow-hidden">
           {/*Top bar*/}
-          <div className={"draggable h-[32px] bg-primary"}></div>
+          <div
+            className={"draggable h-[32px] bg-primary"}
+            onDoubleClick={handleToggleMaximizeWindow}
+          >
+            <span className="ml-[64px] text-primary-content text-sm font-bold py-3 px-2">
+              Title name
+            </span>
+          </div>
           {/* Safe area to display */}
           <div
             className={
