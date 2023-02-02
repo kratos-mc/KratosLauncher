@@ -2,7 +2,7 @@ import chalk from "chalk";
 import needle from "needle";
 
 export function fetchAsStream(url: string) {
-  console.log(chalk.bgYellow(`Fetch from url ${url}`));
+  // console.log(chalk.bgYellow(`Fetch from url ${url}`));
   return needle.get(url, {
     json: false,
     follow: Number.MAX_SAFE_INTEGER,

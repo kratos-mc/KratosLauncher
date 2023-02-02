@@ -158,7 +158,7 @@ export class Download extends EventEmitter {
       }
 
       const downloadStream = fetchAsStream(url);
-      const writeStream = fs.createWriteStream(itemPath);
+      const writeStream = fs.createWriteStream(itemPath, { mode: 0o777 });
 
       // Register events
       downloadStream.on("response", (response: http.IncomingMessage) => {
