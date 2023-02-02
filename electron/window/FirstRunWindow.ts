@@ -15,7 +15,7 @@ export function createFirstRunSetupWindow() {
     frame: false,
     width: 400,
     height: 600,
-    show: true,
+    show: false,
   });
   // Open DevTools when is not on production mode
   if (!isProduction()) {
@@ -26,5 +26,13 @@ export function createFirstRunSetupWindow() {
   window.loadFile(
     path.join(app.getAppPath(), `dist`, `render`, `FirstRun`, `first-run.html`)
   );
+
+  window.webContents.on("did-finish-load", () => {
+    window.show();
+  });
+
+  ipcMain.on('firstRun:launch', () => {
+    
+  })
   return window;
 }

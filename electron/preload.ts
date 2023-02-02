@@ -13,3 +13,8 @@ contextBridge.exposeInMainWorld("loading", {
   ) => ipcRenderer.on("loading:message", callback),
   clean: () => ipcRenderer.removeAllListeners("loading:message"),
 });
+
+contextBridge.exposeInMainWorld("launcher", {
+  toggleMaximizeWindow: () =>
+    ipcRenderer.send("launcher:toggle-maximize-window"),
+});

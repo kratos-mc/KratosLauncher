@@ -4,6 +4,7 @@ import {
   getLauncherAppPath,
   setupUserDataPath,
 } from "../../electron/launcher/file";
+import { expect } from "chai";
 
 /**
  * Global before
@@ -20,6 +21,7 @@ before(() => {
   );
 
   setupUserDataPath();
+  expect(fse.pathExistsSync(getLauncherAppPath())).to.be.true;
 });
 
 /**
@@ -30,6 +32,9 @@ after(() => {
   console.log(
     chalk.green(`${chalk.gray(`[-]`)} Cleaning up userData directory...`)
   );
+  // Empty the dir and remove it
+  fse.emptyDirSync(getLauncherAppPath());
+  fse.removeSync(getLauncherAppPath());
 
-  fse.rmSync(getLauncherAppPath(), { recursive: true, force: true });
+  expect(fse.pathExistsSync(getLauncherAppPath())).to.be.false;
 });

@@ -10,6 +10,7 @@ import {
 } from "./launcher/settings";
 import { createFirstRunSetupWindow } from "./window/FirstRunWindow";
 import { createLoadingWindow } from "./window/loadingWindow";
+import {createMainWindow} from "./window/MainWindow";
 
 async function beforeRunApplication() {
   /**
@@ -79,6 +80,10 @@ Promise.resolve()
         if (loadingWindow.webContents.isDevToolsOpened()) {
           loadingWindow.webContents.closeDevTools();
         }
+
+        // Load the main window
+        createMainWindow();
+
 
         if (hasSettingsFile()) {
           // TODO: render main launcher
