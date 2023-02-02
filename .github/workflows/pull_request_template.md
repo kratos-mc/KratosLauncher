@@ -1,5 +1,18 @@
 ## Describe your changes
 
+### Changes
+
+- something A
+- something BB
+
+### Dependencies
+
+- `react`: purpose of the dependencies
+
+### Tests
+
+- Describe some test case
+
 ## Issue ticket number and link
 
 ## Flight-check
