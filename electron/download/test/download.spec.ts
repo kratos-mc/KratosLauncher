@@ -609,31 +609,40 @@ describe("Download-core", function () {
         "first-download.jar"
       );
       const download = new Download();
+      const assertPromise = new Promise<DownloadedEvent[]>(
+        (resolve, reject) => {
+          // Download the blocklist library from mc server
+          download.addItem({
+            url: `https://libraries.minecraft.net/com/mojang/blocklist/1.0.10/blocklist-1.0.10.jar`,
+            path: downloadPath,
+            size: 964,
+            hash: {
+              algorithm: "sha1",
+              value: "5c685c5ffa94c4cd39496c7184c1d122e515ecef",
+            },
+          });
 
-      // Download the blocklist library from mc server
-      download.addItem({
-        url: `https://libraries.minecraft.net/com/mojang/blocklist/1.0.10/blocklist-1.0.10.jar`,
-        path: downloadPath,
-        size: 964,
-        hash: {
-          algorithm: "sha1",
-          value: "5c685c5ffa94c4cd39496c7184c1d122e515ecef",
-        },
-      });
+          download.start({ mkdirIfNotExists: true });
+          download.on("error", (error) => reject(error));
+          download.on("done", (downloadEventItems: DownloadedEvent[]) => {
+            // console.log(downloadEventItems);
+            resolve(downloadEventItems);
+          });
+        }
+      );
 
-      download.start({ mkdirIfNotExists: true });
-      download.on("error", (error) => done(error));
-      download.on("done", (downloadEventItems: DownloadedEvent[]) => {
-        // console.log(downloadEventItems);
-        expect(fse.existsSync(downloadPath)).to.be.true;
-        expect(Array.isArray(downloadEventItems)).to.be.true;
-        expect(downloadEventItems.length).to.eq(1);
-        expect(getFileSizeInBytes(downloadPath)).to.eq(964);
-        done();
-      });
+      assertPromise
+        .then((downloadEventItems) => {
+          expect(fse.existsSync(downloadPath)).to.be.true;
+          expect(Array.isArray(downloadEventItems)).to.be.true;
+          expect(downloadEventItems.length).to.eq(1);
+          expect(getFileSizeInBytes(downloadPath)).to.eq(964);
+        })
+        .then(done)
+        .catch(done);
     });
 
-    it(`should make a directory / throw whether or not the parent directory is empty`, async function () {
+    it(`should make a directory when parent directory is empty`, function (done) {
       const downloadPath = path.join(
         getLauncherAppPath(),
         "downloads",
@@ -642,37 +651,40 @@ describe("Download-core", function () {
 
       const successMakeDirectoryDownloadPromise = new Promise<void>(
         (resolve, reject) => {
-          try {
-            const download = new Download();
-            // Download the blocklist library from mc server
-            download.addItem({
-              url: `https://libraries.minecraft.net/com/mojang/blocklist/1.0.10/blocklist-1.0.10.jar`,
-              path: downloadPath,
-              size: 964,
-              hash: {
-                algorithm: "sha1",
-                value: "5c685c5ffa94c4cd39496c7184c1d122e515ecef",
-              },
-            });
+          const download = new Download();
+          // Download the blocklist library from mc server
+          download.addItem({
+            url: `https://libraries.minecraft.net/com/mojang/blocklist/1.0.10/blocklist-1.0.10.jar`,
+            path: downloadPath,
+            size: 964,
+            hash: {
+              algorithm: "sha1",
+              value: "5c685c5ffa94c4cd39496c7184c1d122e515ecef",
+            },
+          });
 
-            download.start({ mkdirIfNotExists: true });
-            download.on("error", (error) => reject(error));
-            download.on("done", () => {
-              // expect(fse.pathExistsSync(path.basename(downloadPath))).to.be.true;
-              // Assert download
-              resolve();
-            });
-          } catch (error) {
-            reject(error);
-          }
+          download.start({ mkdirIfNotExists: true });
+          download.on("error", (error) => reject(error));
+          download.on("done", () => {
+            // expect(fse.pathExistsSync(path.basename(downloadPath))).to.be.true;
+            // Assert download
+            resolve();
+          });
         }
       );
 
-      await successMakeDirectoryDownloadPromise;
-      expect(fse.pathExistsSync(path.dirname(downloadPath))).to.be.true;
-      expect(fse.existsSync(downloadPath)).to.be.true;
-      expect(getFileSizeInBytes(downloadPath)).to.eq(964);
+      successMakeDirectoryDownloadPromise
+        .then(() => {
+          expect(fse.pathExistsSync(path.dirname(downloadPath))).to.be.true;
+          expect(fse.existsSync(downloadPath)).to.be.true;
+          expect(getFileSizeInBytes(downloadPath)).to.eq(964);
 
+          done();
+        })
+        .catch(done);
+    });
+
+    it(`should throw when parent directory is empty`, () => {
       const unrealPathDownload = path.join(
         getLauncherAppPath(),
         "downloads-with-unreal-path",
@@ -699,71 +711,95 @@ describe("Download-core", function () {
         getLauncherAppPath(),
         "first-download.jar"
       );
-      const download = new Download();
+      const assertPromise = new Promise<DownloadedEvent[]>(
+        (resolve, reject) => {
+          const download = new Download();
 
-      // Download the blocklist library from mc server without size
-      download.addItem({
-        url: `https://libraries.minecraft.net/com/mojang/blocklist/1.0.10/blocklist-1.0.10.jar`,
-        path: downloadPath,
-        hash: {
-          algorithm: "sha1",
-          value: "5c685c5ffa94c4cd39496c7184c1d122e515ecef",
-        },
-      });
+          // Download the blocklist library from mc server without size
+          download.addItem({
+            url: `https://libraries.minecraft.net/com/mojang/blocklist/1.0.10/blocklist-1.0.10.jar`,
+            path: downloadPath,
+            hash: {
+              algorithm: "sha1",
+              value: "5c685c5ffa94c4cd39496c7184c1d122e515ecef",
+            },
+          });
 
-      download.start({ mkdirIfNotExists: true });
-      download.on("error", (error) => done(error));
-      download.on("done", (downloadEventItems: DownloadedEvent[]) => {
-        expect(fse.existsSync(downloadPath)).to.be.true;
-        expect(Array.isArray(downloadEventItems)).to.be.true;
-        expect(downloadEventItems.length).to.eq(1);
-        expect(getFileSizeInBytes(downloadPath)).to.eq(964);
+          download.start({ mkdirIfNotExists: true });
+          download.on("error", (error) => reject(error));
+          download.on("done", (downloadEventItems: DownloadedEvent[]) => {
+            resolve(downloadEventItems);
+          });
+        }
+      );
 
-        done();
-      });
+      assertPromise
+        .then((downloadEventItems: DownloadedEvent[]) => {
+          expect(fse.existsSync(downloadPath)).to.be.true;
+          expect(Array.isArray(downloadEventItems)).to.be.true;
+          expect(downloadEventItems.length).to.eq(1);
+          expect(getFileSizeInBytes(downloadPath)).to.eq(964);
+
+          done();
+        })
+        .catch(done);
     });
   });
 
   describe("Multiple test", () => {
     it(`should download multiple files`, (done) => {
       const outputFiles = ["first-download", "second-download"];
-      const download = new Download();
+      const assertPromise = new Promise<DownloadedEvent[]>(
+        (resolve, reject) => {
+          const download = new Download();
 
-      // Download multiple blocklist libraries from mc server
-      // download.addItem();
-      outputFiles.forEach((fileName) => {
-        download.addItem({
-          url: `https://libraries.minecraft.net/com/mojang/blocklist/1.0.10/blocklist-1.0.10.jar`,
-          path: path.join(getLauncherAppPath(), "multiple-downloads", fileName),
-          size: 964,
-          hash: {
-            algorithm: "sha1",
-            value: "5c685c5ffa94c4cd39496c7184c1d122e515ecef",
-          },
-        });
-      });
-
-      download.start({ mkdirIfNotExists: true });
-      download.on("error", (error) => done(error));
-      download.on("done", (downloadEventItems: DownloadedEvent[]) => {
-        expect(Array.isArray(downloadEventItems)).to.be.true;
-        // Check every items exist
-        expect(
-          [...outputFiles]
-            .map((fileName) => {
-              return path.join(
+          // Download multiple blocklist libraries from mc server
+          // download.addItem();
+          outputFiles.forEach((fileName) => {
+            download.addItem({
+              url: `https://libraries.minecraft.net/com/mojang/blocklist/1.0.10/blocklist-1.0.10.jar`,
+              path: path.join(
                 getLauncherAppPath(),
                 "multiple-downloads",
                 fileName
-              );
-            })
-            .map((absolutePath) => fse.existsSync(absolutePath))
-            .every((assertion) => assertion)
-        ).to.be.true;
-        expect(downloadEventItems.length).to.eq(2);
-        // expect(getFileSizeInBytes(downloadPath)).to.eq(964);
-        done();
-      });
+              ),
+              size: 964,
+              hash: {
+                algorithm: "sha1",
+                value: "5c685c5ffa94c4cd39496c7184c1d122e515ecef",
+              },
+            });
+          });
+
+          download.start({ mkdirIfNotExists: true });
+          download.on("error", (error) => reject(error));
+          download.on("done", (downloadEventItems: DownloadedEvent[]) => {
+            resolve(downloadEventItems);
+          });
+        }
+      );
+
+      assertPromise
+        .then((downloadEventItems: DownloadedEvent[]) => {
+          expect(Array.isArray(downloadEventItems)).to.be.true;
+          // Check every items exist
+          expect(
+            [...outputFiles]
+              .map((fileName) => {
+                return path.join(
+                  getLauncherAppPath(),
+                  "multiple-downloads",
+                  fileName
+                );
+              })
+              .map((absolutePath) => fse.existsSync(absolutePath))
+              .every((assertion) => assertion)
+          ).to.be.true;
+          expect(downloadEventItems.length).to.eq(2);
+          // expect(getFileSizeInBytes(downloadPath)).to.eq(964);
+          done();
+        })
+        .catch(done);
     });
   });
 });
