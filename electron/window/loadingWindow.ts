@@ -11,7 +11,7 @@ export async function createLoadingWindow() {
     show: true,
     frame: false,
     width: 300,
-    height: 490,
+    height: 520,
     alwaysOnTop: true,
   });
 
