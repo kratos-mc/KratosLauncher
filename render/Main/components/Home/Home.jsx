@@ -47,7 +47,7 @@ export function Home() {
             <div className="font-bold">Player_Nguyen </div>
             <button className="btn btn-ghost btn-sm">
               <HiPencil />
-            </button>{" "}
+            </button>
           </div>
           <div>Latest</div>
           <div>1.19.2</div>

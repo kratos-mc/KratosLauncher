@@ -32,7 +32,7 @@ export function Profile() {
   ]);
 
   return (
-    <div className="px-12 py-6">
+    <div className="md:px-24 px-12 py-6">
       <div className="flex flex-col items-start justify-start h-full min-h-[calc(100vh-32px)] w-full">
         <div className="flex flex-row items-center w-full">
           <div className="font-bold text-3xl mb-4 flex-1">Profile</div>
@@ -44,7 +44,7 @@ export function Profile() {
 
         <div className=" flex flex-col gap-2 w-full max-h-[300px] h-[300px]">
           {profileList.map((profile) => {
-            return <ProfileListItem profile={profile} />;
+            return <ProfileListItem key={profile.uid} profile={profile} />;
           })}
         </div>
       </div>
@@ -57,7 +57,7 @@ function ProfileListItem({ profile }) {
     <div className="px-6 py-2 bg-base-200 w-full rounded-xl flex flex-row items-center border">
       <div className="flex flex-col flex-1">
         <p className="font-bold">{profile.name}</p>
-        <p>{profile.minecraftVersion}</p>
+        <p className="text-xs">{profile.minecraftVersion}</p>
       </div>
       <div>
         <ul className="menu menu-horizontal bg-base-100 rounded-box text-sm">
