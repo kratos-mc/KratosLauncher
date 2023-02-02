@@ -33,6 +33,7 @@ after(() => {
     chalk.green(`${chalk.gray(`[-]`)} Cleaning up userData directory...`)
   );
 
+  fse.emptyDirSync(getLauncherAppPath());
   fse.removeSync(getLauncherAppPath());
 
   expect(fse.pathExistsSync(getLauncherAppPath())).to.be.false;
