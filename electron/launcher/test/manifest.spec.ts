@@ -82,6 +82,15 @@ describe("Version manifest with no parent path exist", function () {
     resetManifestCache();
   });
 
+  after(() => {
+    // Make a directory after executed tests
+    if (!fse.existsSync(getVersionsPath())) {
+      fse.mkdirSync(getVersionsPath());
+    }
+    expect(fse.existsSync(getVersionsPath())).to.be.true;
+    resetManifestCache();
+  });
+
   it(`should throw error when resolve without parent`, function () {
     return resolveManifest()
       .then(() => {})
