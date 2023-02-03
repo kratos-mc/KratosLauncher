@@ -2,11 +2,8 @@ import chalk from "chalk";
 import fse from "fs-extra";
 import { test, expect } from "@playwright/test";
 import { ElectronApplication, Page, _electron as electron } from "playwright";
-import path from "path";
-import { getLauncherAppPath } from "../../electron/launcher/file";
 
 let electronApp: ElectronApplication;
-let page: Page;
 
 /**
  * Before test, check for build
@@ -34,7 +31,7 @@ test.beforeAll(async () => {
   });
 
   electronProcess.stderr?.on("data", (c) => {
-    console.log(chalk.red(`[process::stderr] ${c.toString()}`));
+    console.log(chalk.yellow(`[process::stderr] ${c.toString()}`));
   });
 
   electronApp.on("window", async (page) => {
@@ -49,10 +46,6 @@ test.beforeAll(async () => {
       console.log(msg.text());
     });
   });
-
-  page = await electronApp.firstWindow();
-
-  console.log(`window title: ${await page.title()}`);
 });
 
 test.afterAll(async () => {
@@ -61,8 +54,13 @@ test.afterAll(async () => {
 });
 
 test.describe(`General context render `, () => {
-  test("should run application", async () => {
-    expect(true).toBe(true);
-    // await page.check("div#app");
+  test("should run application with Kratos name", async () => {
+    const appInformation = await electronApp.evaluate(async ({ app }) => {
+      // This runs in the main Electron process, parameter here is always
+      // the result of the require('electron') in the main app script.
+      return { name: app.getName(), version: app.getVersion() };
+    });
+
+    expect(appInformation.name).toBe("Kratos");
   });
 });
