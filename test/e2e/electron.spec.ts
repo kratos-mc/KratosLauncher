@@ -16,6 +16,7 @@ test.beforeAll(async () => {
   process.env.CI = "e2e";
   electronApp = await electron.launch({
     args: ["."],
+    env: { ...process.env, NODE_ENV: "development" },
   });
 
   const appPath = await electronApp.evaluate(async ({ app }) => {
