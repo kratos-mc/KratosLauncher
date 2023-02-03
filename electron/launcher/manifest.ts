@@ -112,3 +112,7 @@ export async function resolveManifest() {
 
   return globalManifestSearchEngine;
 }
+
+export async function resetManifestCache() {
+  globalManifestSearchEngine = undefined;
+}
