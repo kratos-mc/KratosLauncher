@@ -129,3 +129,5 @@ app.on("window-all-closed", () => {
 //     // TODO: add a window that display error
 //     console.error(err);
 //   });
+
+if (require("electron-squirrel-startup")) app.quit();
