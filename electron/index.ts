@@ -4,6 +4,7 @@ import path from "path";
 import { isProduction } from "./environment";
 import { getLauncherAppPath, setupUserDataPath } from "./launcher/file";
 import { resolveManifest } from "./launcher/manifest";
+import { loadGlobalProfileStorage, ProfileManager, ProfileStorage } from "./launcher/profile";
 import {
   getSettingsConfiguration,
   hasSettingsFile,
@@ -92,6 +93,13 @@ app.on("window-all-closed", () => {
   console.log(
     `Latest release minecraft version now is ${searchEngine.getLatestRelease()}`
   );
+  loadingWindow.webContents.send("loading:message", {
+    message: "loading profiles",
+  });
+  
+  // Load profile if not exists
+  ProfileManager.setupDefaultProfile()
+  loadGlobalProfileStorage()
 
   loadingWindow.webContents.send("loading:message", {
     message: "loading launcher configuration",
