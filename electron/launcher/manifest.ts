@@ -3,7 +3,7 @@ import needle from "needle";
 import path from "path";
 import { getVersionsPath } from "./versions";
 
-export type MinecraftSemver = string;
+export type MinecraftSemver = string | "latest" | "latest_snapshot";
 
 export interface ManifestLatest {
   release: MinecraftSemver;
@@ -110,6 +110,10 @@ export async function resolveManifest() {
   console.log(`Caching the manifest search engine into memory`);
   globalManifestSearchEngine = new ManifestSearchEngine(manifestResponse);
 
+  return globalManifestSearchEngine;
+}
+
+export function getGlobalManifest() {
   return globalManifestSearchEngine;
 }
 
