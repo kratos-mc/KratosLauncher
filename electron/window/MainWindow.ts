@@ -1,8 +1,8 @@
 import { app, BrowserWindow, ipcMain } from "electron";
 import path from "path";
-import { isProduction } from "../environment";
+import { isProduction, isTesting } from "../environment";
 
-export async function createMainWindow() {
+export function createMainWindow() {
   const render = new BrowserWindow({
     webPreferences: {
       preload: path.join(app.getAppPath(), "dist", "electron", "preload.js"),
@@ -21,12 +21,12 @@ export async function createMainWindow() {
   });
 
   // Open DevTools when is not on production mode
-  if (!isProduction()) {
-    render.webContents.openDevTools({ mode: "detach", activate: true });
+  if (!isProduction() || !isTesting()) {
+    // render.webContents.openDevTools({ mode: "detach", activate: true });
   }
 
   // Load the loading.html file
-  await render.loadFile(
+  render.loadFile(
     path.join(app.getAppPath(), `dist`, `render`, `Main`, `Main.html`)
   );
 
