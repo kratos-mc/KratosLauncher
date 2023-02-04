@@ -13,7 +13,8 @@ const isSilent = process.env.BUILD_LOG_MODE === "silent";
   if (!isSilent) {
     console.log(chalk.green(`${process.cwd()}/${outputDir} `));
   }
-
+  console.log(`Glob received files: `);
+  console.log(files);
   // Transform all files which were walked
   for (const filePath of files) {
     const output = await swc.transform(
