@@ -1,7 +1,5 @@
-import chalk from "chalk";
 import { app, BrowserWindow } from "electron";
-import path from "path";
-import { isProduction } from "./environment";
+
 import { getLauncherAppPath, setupUserDataPath } from "./launcher/file";
 import { resolveManifest } from "./launcher/manifest";
 import {
@@ -16,53 +14,14 @@ import {
 } from "./launcher/settings";
 import { hasVersionsPath, setupVersionsPath } from "./launcher/versions";
 import { createFirstRunSetupWindow } from "./window/FirstRunWindow";
-import { createLoadingWindow } from "./window/loadingWindow";
-import { createMainWindow } from "./window/MainWindow";
+import { beforeRunApplication, whenAppReady } from "./application";
 
-async function beforeRunApplication() {
-  /**
-   * Loading everything before the app was ready
-   */
-  if (!isProduction()) {
-    console.log(chalk.gray(`[~] ${chalk.green(`cwd: `)} ${process.cwd()}`));
-    console.log(chalk.gray(`[~] ${chalk.green(`__dirname: `)} ${__dirname}`));
-    console.log(
-      chalk.gray(`[~] ${chalk.green(`app.getAppPath(): `)} ${app.getAppPath()}`)
-    );
-    console.log(
-      chalk.gray(
-        `[~] ${chalk.green(`app.getPath("appData"): `)} ${app.getPath(
-          "appData"
-        )}`
-      )
-    );
-    console.log(
-      chalk.gray(
-        `[~] ${chalk.green(`Launcher app path: `)} ${getLauncherAppPath()}`
-      )
-    );
-  }
-  // Set application data
-  app.setPath(
-    "userData",
-    path.join(app.getPath("appData"), app.name, "web-cache")
-  );
-
-  console.log(chalk.gray(`[~] ${chalk.green(`App Name: `)} ${app.name}`));
-  console.log(
-    chalk.gray(`[~] ${chalk.green(`App version: `)} ${app.getVersion()}`)
-  );
-  console.log(chalk.gray(`[~] ${chalk.green(`isPacked: `)} ${app.isPackaged}`));
-}
-
-app.whenReady().then(async () => {
+(async () => {
   await beforeRunApplication();
-  await createMainWindow();
 
-  app.on("activate", () => {
-    if (BrowserWindow.getAllWindows().length === 0) createMainWindow();
-  });
-});
+  await app.whenReady();
+  await whenAppReady();
+})();
 
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") app.quit();
