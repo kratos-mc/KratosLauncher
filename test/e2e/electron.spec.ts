@@ -19,38 +19,23 @@ test.beforeAll(async () => {
     env: { ...process.env, NODE_ENV: "development" },
   });
 
-  const appPath = await electronApp.evaluate(async ({ app }) => {
-    // This runs in the main Electron process, parameter here is always
-    // the result of the require('electron') in the main app script.
-    return app.getAppPath();
-  });
-  console.log(`appPath: ${appPath}`);
-  const electronProcess = await electronApp.process();
-
-  electronProcess.stdout?.on("data", (c) => {
-    console.log(chalk.gray(`[process::stdout] ${c.toString()}`));
-  });
-
-  electronProcess.stderr?.on("data", (c) => {
-    console.log(chalk.yellow(`[process::stderr] ${c.toString()}`));
-  });
-
-  electronApp.on("window", async (page) => {
-    const filename = page.url()?.split("/").pop();
-    console.log(`Window opened: ${filename}`);
-    // capture errors
-    page.on("pageerror", (error) => {
-      console.error(error);
-    });
-    // capture console messages
-    page.on("console", (msg) => {
-      console.log(msg.text());
-    });
-  });
+  // electronApp.on("window", async (page) => {
+  //   const filename = page.url()?.split("/").pop();
+  //   console.log(`Window opened: ${filename}`);
+  //   // capture errors
+  //   page.on("pageerror", (error) => {
+  //     console.error(error);
+  //   });
+  //   // capture console messages
+  //   page.on("console", (msg) => {
+  //     console.log(msg.text());
+  //   });
+  // });
 });
 
 test.afterAll(async () => {
   console.log(`Closing electron application`);
+  await electronApp.waitForEvent("window");
   await electronApp.close();
 });
 
