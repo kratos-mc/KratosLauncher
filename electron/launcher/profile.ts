@@ -237,3 +237,14 @@ export class ProfileStorage {
     return { items };
   }
 }
+
+let globalProfileStorage: ProfileStorage | undefined;
+
+export function loadGlobalProfileStorage() {
+  const launcherProfile = ProfileManager.getProfileFromFile();
+  globalProfileStorage = new ProfileStorage(launcherProfile);
+}
+
+export function getGlobalProfileStorage() {
+  return globalProfileStorage;
+}
