@@ -5,12 +5,14 @@ const { walk } = require("./utils/walk-path");
 const chalk = require("chalk");
 
 const walkingGlob = path.join("./electron/**/*.+(js|ts)");
-const outputDir = `./dist`;
+const outputDir = `dist`;
 const isSilent = process.env.BUILD_LOG_MODE === "silent";
 
 (async () => {
   const files = await walk(walkingGlob);
-  console.log(chalk.green(`${outputDir} `));
+  if (!isSilent) {
+    console.log(chalk.green(`${process.cwd()}/${outputDir} `));
+  }
 
   // Transform all files which were walked
   for (const filePath of files) {
@@ -38,7 +40,9 @@ const isSilent = process.env.BUILD_LOG_MODE === "silent";
       `${path.basename(filePath, path.extname(filePath))}.js`
     );
 
-    !isSilent && console.log(chalk.green(` ${chalk.gray(`*`)} /${filePath}`));
+    if (!isSilent) {
+      console.log(chalk.green(` ${chalk.gray(`*`)} /${filePath}`));
+    }
     // Generate output directory if not exist
     if (!fs.existsSync(path.dirname(outputFileName))) {
       fs.mkdirSync(path.dirname(outputFileName), { recursive: true });
