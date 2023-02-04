@@ -2,7 +2,9 @@ const { Parcel } = require("@parcel/core");
 const chalk = require("chalk");
 const { messageParcelError } = require("./utils/parcel-error-message");
 const path = require("path");
-const { walk } = require("./utils/walk-path");
+
+const isSilent =
+  process.env.BUILD_LOG_MODE && process.env.BUILD_LOG_MODE === "silent";
 
 (async () => {
   if (process.env.NODE_ENV === "production") {
@@ -44,14 +46,18 @@ const { walk } = require("./utils/walk-path");
     if (buildStatus.type === "buildSuccess") {
       console.log();
 
-      console.log(chalk.gray.bold(`Renderer changed assets: `));
-      Array.from(buildStatus.changedAssets.values())
-        .map((asset) => path.parse(asset.filePath).base)
-        .forEach((filePath) => {
-          console.log(
-            ` ${chalk.gray(`*`)} ${chalk.green.bold(filePath)} ${chalk.gray()}`
-          );
-        });
+      if (!isSilent) {
+        console.log(chalk.gray.bold(`Renderer changed assets: `));
+        Array.from(buildStatus.changedAssets.values())
+          .map((asset) => path.parse(asset.filePath).base)
+          .forEach((filePath) => {
+            console.log(
+              ` ${chalk.gray(`*`)} ${chalk.green.bold(
+                filePath
+              )} ${chalk.gray()}`
+            );
+          });
+      }
       console.log(
         chalk.green(
           `Successfully bundler ${chalk.gray(`(${buildStatus.buildTime} ms)`)}`

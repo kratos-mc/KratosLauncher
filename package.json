@@ -5,13 +5,13 @@
   "description": "",
   "main": "./dist/electron/index.js",
   "scripts": {
-    "build": "node ./scripts/cli.js build all",
+    "build": "node ./scripts/cli.js build all --silent",
     "clean": "node ./scripts/cli.js clean",
     "test-unit": "cross-env NODE_ENV=test mocha",
     "coverage": "cross-env NODE_ENV=test nyc npm run test",
     "start": "cross-env NODE_ENV=production electron-forge start",
     "dev": "concurrently -c \"auto\" \"node ./scripts/watch-render.js\" \"wait-on file:./dist/render && node ./scripts/cli.js build electron && electron .\" ",
-    "test-e2e": "npm run build && playwright test",
+    "test-e2e": "npm run build && cross-env DEBUG=pw:browser playwright test",
     "test": "concurrently -c \"auto\" \"npm:test-*\" --kill-others-on-fail -g --timings",
     "package": "electron-forge package",
     "make": "electron-forge make"
