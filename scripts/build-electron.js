@@ -4,7 +4,7 @@ const path = require("path");
 const { walk } = require("./utils/walk-path");
 const chalk = require("chalk");
 
-const walkingGlob = path.join("./electron/**/*.+(js|ts)");
+const walkingGlob = "./electron/**/*.+(js|ts)";
 const outputDir = `dist`;
 const isSilent = process.env.BUILD_LOG_MODE === "silent";
 
