@@ -5,7 +5,7 @@
   "description": "",
   "main": "./dist/electron/index.js",
   "scripts": {
-    "build": "node ./scripts/cli.js build all --silent",
+    "build": "node ./scripts/cli.js build all",
     "clean": "node ./scripts/cli.js clean",
     "test-unit": "cross-env NODE_ENV=test mocha",
     "coverage": "cross-env NODE_ENV=test nyc npm run test",
