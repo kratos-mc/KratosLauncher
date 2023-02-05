@@ -19,7 +19,8 @@ yargs(hideBin(process.argv))
           default: "all",
         })
 
-        .options("p", { alias: "production" });
+        .options("p", { alias: "production" })
+        .options("s", { alias: "silent" });
     },
     (args) => build(args)
   )
@@ -40,6 +41,9 @@ yargs(hideBin(process.argv))
 function build(args) {
   if (args.production) {
     process.env.NODE_ENV = "production";
+  }
+  if (args.silent) {
+    process.env.BUILD_LOG_MODE = "silent"
   }
   if (args.type === `render` || args.type === `all`) {
     console.log(chalk.green(`* Starting to build a render(react) application`));

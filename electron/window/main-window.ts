@@ -1,6 +1,5 @@
 import { app, BrowserWindow, ipcMain } from "electron";
 import path from "path";
-import { isProduction } from "../environment";
 
 export async function createMainWindow() {
   const render = new BrowserWindow({
@@ -12,7 +11,7 @@ export async function createMainWindow() {
       x: 8,
     },
     titleBarStyle: "hiddenInset",
-    show: true,
+    show: false,
     frame: false,
     width: 800,
     height: 600,
@@ -20,13 +19,8 @@ export async function createMainWindow() {
     minHeight: 350,
   });
 
-  // Open DevTools when is not on production mode
-  if (!isProduction()) {
-    render.webContents.openDevTools({ mode: "detach", activate: true });
-  }
-
   // Load the loading.html file
-  await render.loadFile(
+  render.loadFile(
     path.join(app.getAppPath(), `dist`, `render`, `Main`, `Main.html`)
   );
 
