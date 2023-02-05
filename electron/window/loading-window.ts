@@ -15,11 +15,6 @@ export async function createLoadingWindow() {
     alwaysOnTop: true,
   });
 
-  // Open DevTools when is not on production mode
-  if (!isProduction()) {
-    render.webContents.openDevTools({ mode: "detach", activate: true });
-  }
-
   // Load the loading.html file
   render.loadFile(
     path.join(app.getAppPath(), `dist`, `render`, `loading`, `loading.html`)

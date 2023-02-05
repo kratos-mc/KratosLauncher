@@ -1,6 +1,5 @@
 import { app, BrowserWindow, ipcMain } from "electron";
 import path from "path";
-import { isProduction, isTesting } from "../environment";
 
 export async function createMainWindow() {
   const render = new BrowserWindow({
@@ -19,11 +18,6 @@ export async function createMainWindow() {
     minWidth: 500,
     minHeight: 350,
   });
-
-  // Open DevTools when is not on production mode
-  if (!isProduction() || !isTesting()) {
-    render.webContents.openDevTools({ mode: "detach", activate: true });
-  }
 
   // Load the loading.html file
   render.loadFile(

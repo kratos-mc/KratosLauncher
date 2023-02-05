@@ -19,8 +19,7 @@ export default function LoadingApp() {
   }, []);
 
   return (
-    <>
-      <div className="p-4 draggable"></div>
+    <div className={"draggable"}>
       <div className="px-6 py-12">
         <center className=" flex flex-col gap-4">
           <div className="bg-primary-content rounded-2xl">
@@ -37,6 +36,6 @@ export default function LoadingApp() {
           </div>
         </center>
       </div>
-    </>
+    </div>
   );
 }

@@ -1,19 +1,5 @@
-import { app, BrowserWindow } from "electron";
-
-import { getLauncherAppPath, setupUserDataPath } from "./launcher/file";
-import { resolveManifest } from "./launcher/manifest";
-import {
-  loadGlobalProfileStorage,
-  ProfileManager,
-  ProfileStorage,
-} from "./launcher/profile";
-import {
-  getSettingsConfiguration,
-  hasSettingsFile,
-  setupSettingPath,
-} from "./launcher/settings";
-import { hasVersionsPath, setupVersionsPath } from "./launcher/versions";
-import { createFirstRunSetupWindow } from "./window/FirstRunWindow";
+import log from "electron-log";
+import { app } from "electron";
 import { beforeRunApplication, whenAppReady } from "./application";
 
 (async () => {
@@ -21,11 +7,15 @@ import { beforeRunApplication, whenAppReady } from "./application";
 
   await app.whenReady();
   await whenAppReady();
-})();
+})().catch((error) => {
+  log.error(error);
+});
 
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") app.quit();
 });
+
+if (require("electron-squirrel-startup")) app.quit();
 // (async () => {
 //   await beforeRunApplication();
 //   await app.whenReady();
@@ -95,18 +85,3 @@ app.on("window-all-closed", () => {
 //     }
 //   }, 3000);
 // })().catch(console.error);
-
-// Promise.resolve()
-//   .then(() => beforeRunApplication())
-//   .then(() => app.whenReady())
-//   .then(() => createLoadingWindow())
-//   .then((loadingWindow) => {})
-//   .then(() => {
-//     // throw new Error("nothing special");
-//   })
-//   .catch((err) => {
-//     // TODO: add a window that display error
-//     console.error(err);
-//   });
-
-if (require("electron-squirrel-startup")) app.quit();

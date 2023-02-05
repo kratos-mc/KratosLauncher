@@ -9,11 +9,16 @@ import {
   setupUserDataPath,
   getSettingPath,
 } from "./launcher/file";
-import { createLoadingWindow } from "./window/loadingWindow";
-import { createMainWindow } from "./window/MainWindow";
+import { createLoadingWindow } from "./window/loading-window";
+import { createMainWindow } from "./window/main-window";
 import { getVersionsPath, setupVersionsPath } from "./launcher/versions";
 import { setupSettingPath } from "./launcher/settings";
 import { resolveManifest } from "./launcher/manifest";
+import {
+  getGlobalProfileStorage,
+  loadGlobalProfileStorage,
+  ProfileManager,
+} from "./launcher/profile";
 
 export async function beforeRunApplication() {
   /**
@@ -37,9 +42,10 @@ export async function beforeRunApplication() {
   }
   // Then set the logging path for `electron-log`
   log.transports.file.resolvePathFn = () => loggingFileName;
-
+  log.initialize({ preload: true });
   loggingStuff();
 
+  log.warn("---------------- [ Application Logging  ] ----------------");
   // Setup directories
   log.info(`Setting up the user data at ${getLauncherAppPath()}`);
   setupUserDataPath();
@@ -64,13 +70,43 @@ export async function whenAppReady() {
   loadingWindow.webContents.send("loading:message", {
     message: "resolving version manifest ",
   });
-
   await resolveManifest();
+
+  // Loading the launcher profile
+  loadingWindow.webContents.send("loading:message", {
+    message: "loading profiles",
+  });
+
+  log.info("Setting up launcher profile ");
+  ProfileManager.setupDefaultProfile();
+  // Load the profile into storage
+  loadGlobalProfileStorage();
+
+  getGlobalProfileStorage()?.createProfileItem({
+    name: "Latest #2",
+    minecraftVersion: "latest_snapshot",
+  });
+
+  // Wait for main window to finish process
+  await waitForDidFinishLoadWebContent(mainWindow);
+  mainWindow.show();
 
   app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) createMainWindow();
   });
 }
+
+app.on("quit", () => {
+  log.log("Saving cache into files");
+
+  // Store global profile
+  const globalProfile = getGlobalProfileStorage();
+  if (!globalProfile) {
+    throw new Error("Global manifest is undefined");
+  }
+  log.info("Storing profiles");
+  ProfileManager.storeProfile(globalProfile.toLauncherProfile());
+});
 
 function loggingStuff() {
   if (!isProduction()) {

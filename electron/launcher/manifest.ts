@@ -89,10 +89,15 @@ export async function resolveManifest() {
 
   let manifestResponse: ManifestResponse;
   try {
-    // const response
+    log.info("Trying to fetch the game version manifest from Minecraft server");
+    const start = Date.now();
     manifestResponse = await fetchManifestFromServer();
+    const timingsResult = Date.now() - start;
+    log.info(
+      ` Timings result: ${(timingsResult / 1000).toPrecision(2)} second(s)`
+    );
     log.log(
-      `Successfully get mc version manifest from server, jat down to ${getManifestFileName()}`
+      `Successfully received the version_manifest_v2.json, jat down to ${getManifestFileName()}`
     );
     fse.writeJSONSync(getManifestFileName(), manifestResponse);
   } catch (err) {
