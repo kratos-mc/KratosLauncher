@@ -1,6 +1,6 @@
 import fse from "fs-extra";
 import log from "electron-log";
-import { app, BrowserWindow, ipcMain } from "electron";
+import { app, BrowserWindow } from "electron";
 import path from "path";
 import { isProduction } from "./environment";
 import chalk from "chalk";
@@ -82,7 +82,6 @@ export async function whenAppReady() {
   // Load the profile into storage
   loadGlobalProfileStorage();
 
-
   // Wait for main window to finish process
   await waitForDidFinishLoadWebContent(mainWindow);
   mainWindow.show();
@@ -95,13 +94,12 @@ export async function whenAppReady() {
 app.on("quit", () => {
   log.log("Saving cache into files");
 
-  // Store global profile
+  // Store global profile if it is exist
   const globalProfile = getGlobalProfileStorage();
-  if (!globalProfile) {
-    throw new Error("Global manifest is undefined");
+  if (globalProfile) {
+    log.info("Storing profiles");
+    ProfileManager.storeProfile(globalProfile.toLauncherProfile());
   }
-  log.info("Storing profiles");
-  ProfileManager.storeProfile(globalProfile.toLauncherProfile());
 });
 
 function loggingStuff() {
