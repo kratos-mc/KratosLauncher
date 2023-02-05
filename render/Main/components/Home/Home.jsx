@@ -38,8 +38,8 @@ export function HomeGameController() {
         <div className="flex-1">
           <div className="dropdown w-full">
             <label tabIndex={0} className="flex flex-row items-center gap-4">
-              <HiUser className="w-1/3" />
-              <button className="btn btn-ghost btn-outline w-2/3">
+              <button className="btn btn-ghost btn-outline w-3/4">
+                <HiUser className="mr-4" />
                 Last played
               </button>
             </label>
@@ -57,8 +57,8 @@ export function HomeGameController() {
                 profiles.map(({ uid, minecraftVersion, name }) => {
                   return (
                     <li key={uid} className={"text-xl"}>
-                      <a>
-                        <div>{name}</div>
+                      <a className={`flex flex-row`}>
+                        <div className={`flex-1`}>{name}</div>
                         <div>{minecraftVersion}</div>
                       </a>
                     </li>
