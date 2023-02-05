@@ -82,10 +82,6 @@ export async function whenAppReady() {
   // Load the profile into storage
   loadGlobalProfileStorage();
 
-  getGlobalProfileStorage()?.createProfileItem({
-    name: "Latest #2",
-    minecraftVersion: "latest_snapshot",
-  });
 
   // Wait for main window to finish process
   await waitForDidFinishLoadWebContent(mainWindow);
