@@ -8,6 +8,7 @@ import {
 } from "./manifest";
 import path from "path";
 import { getLauncherAppPath } from "./file";
+import log from "electron-log";
 
 /**
  * Get a profile file name.
@@ -68,7 +69,8 @@ export class ProfileManager {
         ],
       };
 
-      console.log(`Writing default profile version `);
+      log.log(`Writing default profile version into ${getProfileFileName()}`);
+      log.info(`Content of default profile is: `, profile);
       // Store the object above onto disk as json file
       fse.writeJsonSync(getProfileFileName(), profile);
     }
@@ -119,15 +121,9 @@ export class ProfileStorage {
     for (const profileItem of profile.items) {
       const profileItemParsed = {
         ...profileItem,
-        minecraftVersion:
-          profileItem.minecraftVersion === "latest"
-            ? // If the minecraftVersion field was latest, get latest release from manifest
-              this.globalManifest?.getLatestRelease()
-            : //Otherwise, if the minecraftVersion was latest snapshot, get latest snapshot from manifest
-            profileItem.minecraftVersion === "latest_snapshot"
-            ? this.globalManifest?.getLatestSnapshot()
-            : // Or using the minecraftVersion from data
-              profileItem.minecraftVersion,
+        minecraftVersion: this.resolveMinecraftVersion(
+          profileItem.minecraftVersion
+        ),
       };
 
       //  Test the minecraft version id
@@ -138,9 +134,24 @@ export class ProfileStorage {
   }
 
   private assertMinecraftVersion(version: MinecraftSemver, message?: string) {
+    // Ignore the minecraft version
+    if (version === "latest" || version === "latest_snapshot") {
+      return;
+    }
     if (!this.globalManifest.has(version)) {
       throw new Error(message || `Invalid minecraft version ${version}`);
     }
+  }
+
+  private resolveMinecraftVersion(minecraftVersion: MinecraftSemver) {
+    return minecraftVersion === "latest"
+      ? // If the minecraftVersion field was latest, get latest release from manifest
+        this.globalManifest?.getLatestRelease()
+      : //Otherwise, if the minecraftVersion was latest snapshot, get latest snapshot from manifest
+      minecraftVersion === "latest_snapshot"
+      ? this.globalManifest?.getLatestSnapshot()
+      : // Or using the minecraftVersion from data
+        minecraftVersion;
   }
 
   /**
@@ -187,22 +198,28 @@ export class ProfileStorage {
    * version manifest, throws an Error.
    *
    * @param item a profile item to add into storage
+   * @returns a uid of the profile after created
    */
-  public createProfileItem(item: ProfileItem) {
+  public createProfileItem(item: {
+    minecraftVersion: MinecraftSemver;
+    name: string;
+  }) {
     this.assertMinecraftVersion(item.minecraftVersion);
     if (item.name === undefined) {
       throw new Error(`Profile name cannot be undefined`);
     }
-
-    if (item.uid === undefined) {
-      throw new Error(`Profile uid cannot be undefined`);
+    const uid = v4();
+    if (this.getProfileFromUid(uid) !== undefined) {
+      throw new Error(`Uid conflict ${uid}`);
     }
 
-    if (this.getProfileFromUid(item.uid) !== undefined) {
-      throw new Error(`Uid conflict ${item.uid}`);
-    }
+    this.profileMap.set(uid, {
+      name: item.name,
+      minecraftVersion: this.resolveMinecraftVersion(item.minecraftVersion),
+      uid,
+    });
 
-    this.profileMap.set(item.uid, item);
+    return uid;
   }
 
   /**
@@ -243,6 +260,8 @@ let globalProfileStorage: ProfileStorage | undefined;
 export function loadGlobalProfileStorage() {
   const launcherProfile = ProfileManager.getProfileFromFile();
   globalProfileStorage = new ProfileStorage(launcherProfile);
+
+  log.info(`Successfully load the launcher profile`);
 }
 
 export function getGlobalProfileStorage() {

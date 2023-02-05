@@ -2,6 +2,7 @@ import fse from "fs-extra";
 import needle from "needle";
 import path from "path";
 import { getVersionsPath } from "./versions";
+import log from "electron-log";
 
 export type MinecraftSemver = string | "latest" | "latest_snapshot";
 
@@ -78,7 +79,7 @@ let globalManifestSearchEngine: ManifestSearchEngine | undefined = undefined;
 
 export async function resolveManifest() {
   if (globalManifestSearchEngine) {
-    console.log(`Manifest has already cached, using from memory`);
+    log.log(`Manifest has already cached, using from memory`);
     return globalManifestSearchEngine;
   }
   // If the version dir is not exists
@@ -88,16 +89,21 @@ export async function resolveManifest() {
 
   let manifestResponse: ManifestResponse;
   try {
-    // const response
+    log.info("Trying to fetch the game version manifest from Minecraft server");
+    const start = Date.now();
     manifestResponse = await fetchManifestFromServer();
-    console.log(
-      `Successfully get mc version manifest from server, write onto disk as json file ${getManifestFileName()}`
+    const timingsResult = Date.now() - start;
+    log.info(
+      ` Timings result: ${(timingsResult / 1000).toPrecision(2)} second(s)`
+    );
+    log.log(
+      `Successfully received the version_manifest_v2.json, jat down to ${getManifestFileName()}`
     );
     fse.writeJSONSync(getManifestFileName(), manifestResponse);
   } catch (err) {
-    console.log(`Found error when fetching version manifest from server`);
-    console.error(err);
-    console.log(`Trying to use local manifest file if possible`);
+    log.log(`Found error when fetching version manifest from server`);
+    log.error(err);
+    log.log(`Trying to use local manifest file if possible`);
 
     if (!fse.existsSync(getManifestFileName())) {
       throw new Error(
@@ -107,7 +113,7 @@ export async function resolveManifest() {
     manifestResponse = fse.readJsonSync(getManifestFileName());
   }
   // Cache into memory for next use
-  console.log(`Caching the manifest search engine into memory`);
+  log.log(`Caching the manifest search engine into memory`);
   globalManifestSearchEngine = new ManifestSearchEngine(manifestResponse);
 
   return globalManifestSearchEngine;

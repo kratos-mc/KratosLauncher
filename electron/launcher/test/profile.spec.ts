@@ -171,14 +171,12 @@ describe("ProfileStorage", () => {
 
       const latestMinecraftVersion =
         getGlobalManifest()?.getLatestRelease() as string;
-      const profileGeneratedUid = v4();
-      expect(() => {
-        profileStorage.createProfileItem({
-          minecraftVersion: latestMinecraftVersion,
-          uid: profileGeneratedUid,
-          name: "Second Latest Profile",
-        });
-      }).not.to.throws();
+      let profileGeneratedUid;
+      profileGeneratedUid = profileStorage.createProfileItem({
+        minecraftVersion: latestMinecraftVersion,
+        // uid: profileGeneratedUid,
+        name: "Second Latest Profile",
+      });
 
       const lastInsertProfile =
         profileStorage.getProfileFromUid(profileGeneratedUid);
@@ -203,7 +201,7 @@ describe("ProfileStorage", () => {
       expect(() => {
         profileStorage.createProfileItem({
           minecraftVersion: "non-exist-mc-version",
-          uid: v4(),
+          // uid: v4(),
           name: "Second Latest Profile",
         });
       }).to.throws(/Invalid minecraft version.+/);
@@ -213,26 +211,26 @@ describe("ProfileStorage", () => {
       expect(() => {
         profileStorage.createProfileItem({
           minecraftVersion: latestMinecraftVersion,
-          uid: v4(),
+          // uid: v4(),
           name: undefined as unknown as string,
         });
       }).to.throws(/Profile name cannot be undefined/);
 
-      expect(() => {
-        profileStorage.createProfileItem({
-          minecraftVersion: latestMinecraftVersion,
-          uid: undefined as unknown as string,
-          name: "Other latest #1",
-        });
-      }).to.throws(/Profile uid cannot be undefined/);
-
-      expect(() => {
-        profileStorage.createProfileItem({
-          minecraftVersion: latestMinecraftVersion,
-          uid: conflictUid,
-          name: "Other latest #2",
-        });
-      }).to.throws(/Uid conflict/);
+      // Auto-generate unique id instead of providing
+      // expect(() => {
+      //   profileStorage.createProfileItem({
+      //     minecraftVersion: latestMinecraftVersion,
+      //     uid: undefined as unknown as string,
+      //     name: "Other latest #1",
+      //   });
+      // }).to.throws(/Profile uid cannot be undefined/);
+      // expect(() => {
+      //   profileStorage.createProfileItem({
+      //     minecraftVersion: latestMinecraftVersion,
+      //     uid: conflictUid,
+      //     name: "Other latest #2",
+      //   });
+      // }).to.throws(/Uid conflict/);
 
       // Remove undefined uid
       expect(() => {

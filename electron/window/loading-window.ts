@@ -8,17 +8,12 @@ export async function createLoadingWindow() {
     webPreferences: {
       preload: path.join(app.getAppPath(), "dist", "electron", "preload.js"),
     },
-    show: true,
+    show: false,
     frame: false,
     width: 300,
     height: 520,
     alwaysOnTop: true,
   });
-
-  // Open DevTools when is not on production mode
-  if (!isProduction()) {
-    render.webContents.openDevTools({ mode: "detach", activate: true });
-  }
 
   // Load the loading.html file
   render.loadFile(

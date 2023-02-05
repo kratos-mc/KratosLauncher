@@ -1,22 +1,23 @@
-import chalk from "chalk";
-import fse from "fs-extra";
 import { test, expect } from "@playwright/test";
-import { ElectronApplication, Page, _electron as electron } from "playwright";
+import { _electron as electron } from "playwright";
 
-const launchApp = electron.launch({ args: ["."] });
+const launchApp = electron.launch({
+  args: ["."],
+  env: { ...process.env, NODE_ENV: "testing" },
+  cwd: process.cwd(),
+});
 
-test("should launch application", async () => {
+test("should successfully launch application", async () => {
   /**
    * Run application
    */
   const app = await launchApp;
-  const isPackaged = await app.evaluate(({ app }) => {
-    console.log(`isReady: ${app.isReady()}`);
-    return app.isPackaged;
+  // Expect the app to have a name Kratos
+  const appName = await app.evaluate(({ app }) => {
+    return app.getName();
   });
 
-  expect(app).not.toBeUndefined();
-  expect(isPackaged).toBe(false);
+  expect(appName).toBe("Kratos");
   /**
    * Then close it
    */
