@@ -1,5 +1,7 @@
+import log from "electron-log";
 import { app, BrowserWindow, ipcMain } from "electron";
 import path from "path";
+import { getGlobalProfileStorage } from "../launcher/profile";
 
 export async function createMainWindow() {
   const render = new BrowserWindow({
@@ -25,8 +27,14 @@ export async function createMainWindow() {
   );
 
   ipcMain.on("launcher:toggle-maximize-window", () => {
+    log.info(`Requesting toggle the maximize from main window`);
     render.isMaximized() ? render.unmaximize() : render.maximize();
   });
 
+  ipcMain.handle("launcher:get-profiles", () => {
+    const allProfileItems = getGlobalProfileStorage()?.getAllProfileItems();
+    log.log("IPC: launcher:get-profiles ", allProfileItems);
+    return allProfileItems;
+  });
   return render;
 }
