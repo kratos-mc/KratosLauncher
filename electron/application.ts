@@ -1,6 +1,6 @@
 import fse from "fs-extra";
 import log from "electron-log";
-import { app, BrowserWindow } from "electron";
+import { app, BrowserWindow, ipcMain } from "electron";
 import path from "path";
 import { isProduction } from "./environment";
 import chalk from "chalk";
@@ -59,6 +59,9 @@ export async function whenAppReady() {
   log.info("Loading splash screen");
   const loadingWindow = await createLoadingWindow();
 
+  log.info("Loading main window ");
+  const mainWindow = await createMainWindow();
+
   // Wait for the splash screen finish load content, then visible it
   await waitForDidFinishLoadWebContent(loadingWindow);
   loadingWindow.show();
@@ -78,14 +81,11 @@ export async function whenAppReady() {
   ProfileManager.setupDefaultProfile();
   // Load the profile into storage
   loadGlobalProfileStorage();
-  loadingWindow.hide();
 
-  log.info("Loading main window ");
-  const mainWindow = await createMainWindow();
+
   // Wait for main window to finish process
-  mainWindow.webContents.on("did-finish-load", () => {
-    mainWindow.show();
-  });
+  await waitForDidFinishLoadWebContent(mainWindow);
+  mainWindow.show();
 
   app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) createMainWindow();
@@ -95,12 +95,13 @@ export async function whenAppReady() {
 app.on("quit", () => {
   log.log("Saving cache into files");
 
-  // Store global profile if it is exist
+  // Store global profile
   const globalProfile = getGlobalProfileStorage();
-  if (globalProfile) {
-    log.info("Storing profiles");
-    ProfileManager.storeProfile(globalProfile.toLauncherProfile());
+  if (!globalProfile) {
+    throw new Error("Global manifest is undefined");
   }
+  log.info("Storing profiles");
+  ProfileManager.storeProfile(globalProfile.toLauncherProfile());
 });
 
 function loggingStuff() {
