@@ -1,3 +1,5 @@
+import { ProfileItem } from "../electron/launcher/profile";
+
 export interface ElectronVersion {
   chrome: string;
   node: string;
@@ -14,6 +16,7 @@ export interface ElectronLoadingIpc {
 
 export interface ElectronLauncherIpc {
   toggleMaximizeWindow: () => void;
+  getProfiles: () => ProfileItem[];
 }
 
 declare global {

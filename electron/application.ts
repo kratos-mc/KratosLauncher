@@ -59,9 +59,6 @@ export async function whenAppReady() {
   log.info("Loading splash screen");
   const loadingWindow = await createLoadingWindow();
 
-  log.info("Loading main window ");
-  const mainWindow = await createMainWindow();
-
   // Wait for the splash screen finish load content, then visible it
   await waitForDidFinishLoadWebContent(loadingWindow);
   loadingWindow.show();
@@ -81,10 +78,14 @@ export async function whenAppReady() {
   ProfileManager.setupDefaultProfile();
   // Load the profile into storage
   loadGlobalProfileStorage();
+  loadingWindow.hide();
 
+  log.info("Loading main window ");
+  const mainWindow = await createMainWindow();
   // Wait for main window to finish process
-  await waitForDidFinishLoadWebContent(mainWindow);
-  mainWindow.show();
+  mainWindow.webContents.on("did-finish-load", () => {
+    mainWindow.show();
+  });
 
   app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) createMainWindow();
