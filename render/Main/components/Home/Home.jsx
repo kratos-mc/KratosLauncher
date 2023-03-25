@@ -31,6 +31,10 @@ export function HomeGameController() {
     };
   }, []);
 
+  const handleLaunchButtonClick = () => {
+    window.launcher.launchGameWithProfile(profiles[0].uid);
+  };
+
   return (
     <>
       <div className="flex flex-row px-12 py-4 gap-6 items-center">
@@ -69,7 +73,12 @@ export function HomeGameController() {
         </div>
         {/* Start button */}
         <div className="flex-1">
-          <button className="btn btn-primary w-full loading">Launch</button>
+          <button
+            className="btn btn-primary w-full"
+            onClick={handleLaunchButtonClick}
+          >
+            Launch
+          </button>
         </div>
         {/* Use managing */}
         <div className="flex-1 text-sm">
