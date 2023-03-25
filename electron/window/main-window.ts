@@ -36,5 +36,28 @@ export async function createMainWindow() {
     log.log("IPC: launcher:get-profiles ", allProfileItems);
     return allProfileItems;
   });
+
+  ipcMain.on("launcher:launch-game", (_event, { profileId }) => {
+    log.info(`Trying to launch game with the profile: ${profileId}`);
+    const globalProfileStorage = getGlobalProfileStorage();
+    if (!globalProfileStorage) {
+      throw new Error("Unable to get global profile storage");
+    }
+
+    const currentProfileFromUid =
+      globalProfileStorage.getProfileFromUid(profileId);
+    log.info(currentProfileFromUid);
+
+    if (!currentProfileFromUid) {
+      throw new Error(`Not found profile with uid ${profileId}`);
+    }
+
+    // Resolve runtime application
+    log.info(
+      `Resolving game data for version ${currentProfileFromUid?.minecraftVersion}`
+    );
+    // globalProfileStorage.createProfileItem()
+  });
+
   return render;
 }

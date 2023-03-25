@@ -18,4 +18,7 @@ contextBridge.exposeInMainWorld("launcher", {
   toggleMaximizeWindow: () =>
     ipcRenderer.send("launcher:toggle-maximize-window"),
   getProfiles: async () => await ipcRenderer.invoke("launcher:get-profiles"),
+
+  launchGameWithProfile: (profileId: string) =>
+    ipcRenderer.send("launcher:launch-game", { profileId }),
 });

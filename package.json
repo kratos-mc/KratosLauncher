@@ -64,11 +64,13 @@
     "yargs": "^17.6.2"
   },
   "dependencies": {
+    "arch": "^2.2.0",
     "chalk": "^4.1.2",
     "cross-env": "^7.0.3",
     "electron-log": "^5.0.0-beta.16",
     "electron-squirrel-startup": "^1.0.0",
     "fs-extra": "^11.1.0",
+    "kratos-core": "^0.1.0",
     "needle": "^3.2.0",
     "uuid": "^9.0.0"
   }
