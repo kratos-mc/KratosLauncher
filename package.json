@@ -47,7 +47,7 @@
     "concurrently": "^7.6.0",
     "daisyui": "^2.49.0",
     "dotenv": "^16.0.3",
-    "electron": "^22.2.0",
+    "electron": "^22.3.25",
     "glob": "^8.1.0",
     "mocha": "^10.2.0",
     "nyc": "^15.1.0",
